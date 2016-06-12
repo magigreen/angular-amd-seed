@@ -46,6 +46,7 @@ requirejs.config({
         //app module
         'app': 'js/app/app',
         'app-common': 'js/app/app-common',
+        'app-layout': 'js/app/app-layout',
 
         'app-page1': 'js/app/app-page1',
         'app-page2': 'js/app/app-page2',
@@ -63,7 +64,6 @@ requirejs.config({
         'angular-ui-router': ['angular'],
         'angular-translate': ['angular'],
         'angular-translate-loader-static-files': ['angular-translate'],
-        'app-common': ['angular'],
 
         //app module
         'app': [
@@ -79,7 +79,8 @@ requirejs.config({
             /* js core module */
             'app-common',
         ],
-        'app-common': [],
+        'app-common': ['angular'],
+        'app-layout': ['angular'],
         'app-page1': ['css!app-page1<css>'],
         'app-page2': ['css!app-page2<css>'],
         'app-page2-demo1': ['css!app-page2-demo1<css>'],

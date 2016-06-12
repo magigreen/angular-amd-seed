@@ -9,7 +9,7 @@ angular.module('app', [
 ]);
 angular.module('app')
     .config(function($stateProvider, $urlRouterProvider) {
-        $urlRouterProvider.otherwise('/');
+        $urlRouterProvider.otherwise('/page1');
         $stateProvider
             .state('page1', {
                 url: '/page1',
@@ -66,7 +66,9 @@ angular.module('app')
     });
 
 angular.module('app')
-    .constant('appOption', {});
+    .constant('appOption', {
+        testOpt: 'I am test appOption!'
+    });
 angular.module('app')
     .config(function($translateProvider) {
         //default language
@@ -114,6 +116,7 @@ angular.module('app')
          *******************************************************************************/
         function init() {
             console.log('load appController!');
+            console.log(appOption);
         }
     });
 

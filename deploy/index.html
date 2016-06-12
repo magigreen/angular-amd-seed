@@ -8,10 +8,14 @@
 </head>
 
 <body>
-    <header id="appHeaer" class="app-heaer" ng-include="'static/html/app/app-header.html'"></header>
-    <div id="appNavbar" class="app-navbar" ng-include="'static/html/app/app-navbar.html'"></div>
-    <div ui-view class="app-main"></div>
-    <footer id="appFooter" class="app-footer" ng-include="'static/html/app/app-footer.html'"></footer>
+    <div class="app-main">
+        <header id="appHeaer" class="app-heaer" ng-include="'static/html/app/app-header.html'"></header>
+        <div id="appNavbar" class="app-navbar" ng-include="'static/html/app/app-navbar.html'"></div>
+        <div id="appContainer" class="app-container">
+            <div ui-view class="app-container-view"></div>
+        </div>
+        <footer id="appFooter" class="app-footer" ng-include="'static/html/app/app-footer.html'"></footer>
+    </div>
 </body>
 
 </html>
