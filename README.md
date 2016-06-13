@@ -3,7 +3,7 @@
 ## Introduction
 [1)What is AMD?](https://en.wikipedia.org/wiki/Asynchronous_module_definition)
 
-2)Support Plugin:
+2)Dependence Plugin:
 
   [requirejs](https://github.com/requirejs/requirejs)
   
