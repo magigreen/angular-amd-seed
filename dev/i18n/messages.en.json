@@ -1,0 +1,10 @@
+{
+    "page": "page",
+    "demo": "demo",
+    "app-ctrl-info": "I am app controller!",
+    "header-ctrl-info": "I am header controller!",
+    "header-info": "I am Header!",
+    "footer-info": "I am Footer!",
+    "en": "English",
+    "zh-tw": "Chinese (Traditional)"
+}
