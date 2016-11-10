@@ -4,17 +4,17 @@
 <head>
     <meta charset="utf-8">
     <title>Angular AMD Seed</title>
-    <script async src="static/js/plugin/require-js/require.js" data-main="app/main.js"></script>
+    <script async src="app/plugin/js/require-js/require.min.js" data-main="app/main.min.js"></script>
 </head>
 
 <body>
     <div class="app-main">
-        <header id="appHeaer" class="app-heaer" ng-include="'app/layout/header.tpl.html'"></header>
-        <div id="appNavbar" class="app-navbar" ng-include="'app/layout/navbar.tpl.html'"></div>
+        <header id="appHeaer" class="app-heaer" ng-include="'app/layout/header.html'"></header>
+        <div id="appNavbar" class="app-navbar" ng-include="'app/layout/navbar.html'"></div>
         <div id="appContainer" class="app-container">
             <div ui-view class="app-container-view"></div>
         </div>
-        <footer id="appFooter" class="app-footer" ng-include="'app/layout/footer.tpl.html'"></footer>
+        <footer id="appFooter" class="app-footer" ng-include="'app/layout/footer.html'"></footer>
     </div>
 </body>
 

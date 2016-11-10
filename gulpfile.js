@@ -49,7 +49,6 @@ gulp.task('default', gulpsync.sync([
     'buildConfig',
     'clean',
     'processBase',
-    'processTemplate',
 
     'replaceHtmlIndex',
     'replaceJsMain',
@@ -123,33 +122,20 @@ gulp.task('processCssPlugin', gulpsync.sync([
     'processCssPluginFile',
     'processCssPluginMin'
 ]));
-
-//gulp.task('processLessCommon', processLessCommon);
-// gulp.task('processLessWhite', processLessWhite);
-// gulp.task('processLessBlack', processLessBlack);
-// gulp.task('processCss', gulpsync.sync([
-//     'processLessCommon',
-//     'processLessWhite',
-//     'processLessBlack'
-// ]));
+gulp.task('processCssApp', processCssApp);
 
 //process other
 gulp.task('processI18n', processI18n);
-gulp.task('processHtml', processHtml);
+gulp.task('processHtmlApp', processHtmlApp);
 gulp.task('processHtmlIndex', processHtmlIndex);
-gulp.task('processImages', processImages);
-gulp.task('processFiles', processFiles);
-gulp.task('processTemplate', processTemplate);
 
 gulp.task('processBase', gulpsync.sync([
     'processJs',
     'processJsPlugin',
-    'processCss',
+    'processCssApp',
     'processCssPlugin',
-    'processHtml',
+    'processHtmlApp',
     'processHtmlIndex',
-    'processImages',
-    'processFiles',
     'processI18n'
 ]));
 
@@ -208,24 +194,30 @@ function browserReload() {
 }
 
 function watchReload() {
-    //watch js
+    //watch js main
     gulp.watch(config.dev.folderPath+'app/main.js', gulpsync.sync(['processJsMain', 'replaceJsMain', 'browserReload']));
 
     //watch js app
     gulp.watch([
         config.dev.folderPath+'app/**/*.js',
+        '!'+config.dev.folderPath+'app/plugin/**/*',
         '!'+config.dev.folderPath+'app/main.js'
     ], function(event) {
         var paths = watchPath(event, config.dev.folderPath+'app/', config.deploy.folderPath + 'app/');
         var taskName = (function() {
             //console.log(paths);
             var taskNameAry = (paths.srcDir.split('/').length > 1) ? paths.srcDir.split('/') : paths.srcDir.split('\\');
-            var taskName = 'processJsKai';
+            var taskName = '';
             for (var i = 0; i < taskNameAry.length; i++) {
                 if (i == 0) {
                     continue;
                 }
-                taskName += changeCase.upperCaseFirst(taskNameAry[i]);
+                if(i==1){
+                    taskName += taskNameAry[i];
+                }else{
+                    taskName += changeCase.upperCaseFirst(taskNameAry[i]);
+                }
+                
             }
             return taskName;
         })();
@@ -254,12 +246,12 @@ function watchReload() {
     });
 
     //watch js plugin
-    gulp.watch([config.dev.folderPath+'static/js/plugin/**/*.js'], gulpsync.sync(['processJsPluginMin', 'browserReload']));
+    gulp.watch([config.dev.folderPath+'app/plugin/js/**/*.js'], gulpsync.sync(['processJsPluginMin', 'browserReload']));
     gulp.watch([
-        config.dev.folderPath+'static/plugin/js/**/*',
-        '!'+config.dev.folderPath+'static/plugin/js/**/*.js'
+        config.dev.folderPath+'app/plugin/js/**/*',
+        '!'+config.dev.folderPath+'app/plugin/js/**/*.js'
     ], function(event) {
-        var paths = watchPath(event, config.dev.folderPath+'static/plugin/js/', config.deploy.folderPath + 'static/plugin/js/');
+        var paths = watchPath(event, config.dev.folderPath+'app/plugin/js/', config.deploy.folderPath + 'app/plugin/js/');
         return gulp.src(paths.srcPath)
             .pipe(debug())
             .pipe(gulp.dest(paths.distDir))
@@ -269,46 +261,15 @@ function watchReload() {
     });
 
     //watch css
-    //gulp.watch(config.dev.folderPath+'static/less/**/*.less', gulpsync.sync(['processCss', 'browserReload']));
-    gulp.watch(config.dev.folderPath+'static/plugin/css/**/*.css', gulpsync.sync(['processCssPluginMin', 'browserReload']));
+    gulp.watch(config.dev.folderPath+'app/**/*.css', gulpsync.sync(['processCssApp', 'browserReload']));
+    gulp.watch(config.dev.folderPath+'app/plugin/css/**/*.css', gulpsync.sync(['processCssPluginMin', 'browserReload']));
 
     //watch html
-    gulp.watch(config.dev.folderPath+'app/**/*.html', gulpsync.sync(['processHtml', 'browserReload']));
+    gulp.watch(config.dev.folderPath+'app/**/*.html', gulpsync.sync(['processHtmlApp', 'browserReload']));
     gulp.watch(config.dev.folderPath+'index.html', gulpsync.sync(['processHtmlIndex', 'replaceHtmlIndex', 'browserReload']));
 
-    //watch files
-    // gulp.watch([
-    //     config.dev.folderPath+'static/files/fonts/**/*.*',
-    //     config.dev.folderPath+'static/files/notification/**/*.*',
-    //     config.dev.folderPath+'static/files/download/**/*.*'
-    // ], gulpsync.sync(['process-files', 'browserReload']));
-
-    gulp.watch(config.i18n.mainPath, gulpsync.sync(['processI18n', 'browserReload']));
-
-    //watch design files   
-    gulp.watch([
-        config.dev.folderPath+'template/**/*',
-    ], function(event) {
-        var paths = watchPath(event, config.dev.folderPath+'template/', config.deploy.folderPath + 'template/');
-        return gulp.src(paths.srcPath)
-            .pipe(debug())
-            .pipe(gulp.dest(paths.distDir))
-            .pipe(gcallback(function() {
-                browserReload();
-            }));
-    });
-
-    // gulp.watch([
-    //     config.dev.folderPath+'guide/**/*',
-    // ], function(event) {
-    //     var paths = watchPath(event, config.dev.folderPath+'guide/', config.deploy.folderPath + 'guide/');
-    //     return gulp.src(paths.srcPath)
-    //         .pipe(debug())
-    //         .pipe(gulp.dest(paths.distDir))
-    //         .pipe(gcallback(function() {
-    //             browserReload();
-    //         }));
-    // });
+    //watch I18n
+    gulp.watch(config.dev.folderPath+config.i18n.mainPath, gulpsync.sync(['processI18n', 'browserReload']));
 }
 
 function replaceDevApi() {
@@ -391,26 +352,29 @@ function replaceJsMain() {
 }
 
 function processI18n() {
-    var sourceMain = JSON.parse(fs.readFileSync(config.i18n.mainPath));
-    var sourceFinal = {};
-    for (var i = 0; i < config.i18n.extendPath.length; i++) {
-        var sourceExtend = JSON.parse(fs.readFileSync(config.i18n.extendPath[i]));
-        for (var keyA in sourceMain) {
-            var isBuild = true;
-            for (var keyB in sourceExtend) {
-                if (keyA == keyB) {
-                    sourceFinal[keyA] = sourceExtend[keyA];
-                    isBuild = false;
-                    break;
-                }
-            }
-            if (isBuild) {
-                sourceFinal[keyA] = sourceMain[keyA];
-            }
-        }
-        fs.unlink(config.i18n.extendPath[i]);
-        fs.appendFile(config.i18n.extendPath[i], JSON.stringify(sourceFinal, null, "\t"));
-    }
+    //!!!!!!!!!!!!!!!!!!!!!!need check
+    // var sourceMain = JSON.parse(fs.readFileSync(config.dev.folderPath+config.i18n.mainPath));
+    // var sourceFinal = {};
+    // for (var i = 0; i < config.i18n.extendPath.length; i++) {
+    //     var sourceExtend = JSON.parse(fs.readFileSync(config.dev.folderPath+config.i18n.extendPath[i]));
+    //     for (var keyA in sourceMain) {
+    //         var isBuild = true;
+    //         for (var keyB in sourceExtend) {
+    //             if (keyA == keyB) {
+    //                 sourceFinal[keyA] = sourceExtend[keyA];
+    //                 isBuild = false;
+    //                 break;
+    //             }
+    //         }
+    //         if (isBuild) {
+    //             sourceFinal[keyA] = sourceMain[keyA];
+    //         }
+    //     }
+    //     fs.unlink(config.dev.folderPath+config.i18n.extendPath[i],function(){
+    //         fs.appendFile(config.dev.folderPath+config.i18n.extendPath[i], JSON.stringify(sourceFinal, null, "\t"));   
+    //     });
+          
+    // }
     return gulp.src(config.dev.folderPath+'static/i18n/*.*')
         .pipe(debug())
         .pipe(gulp.dest(config.deploy.folderPath + 'static/i18n/'));
@@ -418,68 +382,32 @@ function processI18n() {
 
 function processCssPluginFile() {
     return gulp.src([
-            config.dev.folderPath+'static/css/plugin/**/*.*',
+            config.dev.folderPath+'app/plugin/css/**/*.*',
         ])
         .pipe(debug())
-        .pipe(gulp.dest(config.deploy.folderPath + 'static/css/plugin/'));
+        .pipe(gulp.dest(config.deploy.folderPath + 'app/plugin/css/'));
 };
 
 function processCssPluginMin() {
     return gulp.src([
-            config.dev.folderPath+'static/css/plugin/**/*.css',
-            config.dev.folderPath+'!static/css/plugin/**/*.min.css'
+            config.dev.folderPath+'app/plugin/css/**/*.css',
+            '!'+config.dev.folderPath+'app/plugin/css/**/*.min.css'
         ])
         .pipe(debug())
-        .pipe(gulp.dest(config.deploy.folderPath + 'static/css/plugin/'))
+        .pipe(gulp.dest(config.deploy.folderPath + 'app/plugin/css/'))
         //minify
         .pipe(cleanCSS({ keepSpecialComments: 0 }))
         .pipe(rename({ suffix: '.min' }))
-        .pipe(gulp.dest(config.deploy.folderPath + 'static/css/plugin/'));
+        .pipe(gulp.dest(config.deploy.folderPath + 'app/plugin/css/'));
 };
 
-// function processLessCommon() {
-//     return gulp.src([
-//             'static/less/**/*.less',
-//             //'!static/less/**/*variables.less',
-//             '!static/less/**/*white.less',
-//             '!static/less/**/*black.less'
-//         ])
-//         .pipe(debug())
-//         .pipe(less())
-//         .pipe(concat('common.css'))
-//         .pipe(gulp.dest(config.deploy.folderPath + '/static/css/'))
-//         //minify
-//         .pipe(cleanCSS({ keepSpecialComments: 0 }))
-//         .pipe(rename({ suffix: '.min' }))
-//         .pipe(gulp.dest(config.deploy.folderPath + '/static/css/'));
-// };
+function processCssApp() {
+    return gulp.src(config.dev.folderPath+'app/**/*.css')
+        .pipe(debug())
+        .pipe(gulp.dest(config.deploy.folderPath + 'app/'));
+};
 
-
-// function processLessWhite() {
-//     return gulp.src('static/less/**/*white.less')
-//         .pipe(debug())
-//         .pipe(less())
-//         .pipe(concat('white.css'))
-//         .pipe(gulp.dest(config.deploy.folderPath + '/static/css/'))
-//         //minify
-//         .pipe(cleanCSS({ keepSpecialComments: 0 }))
-//         .pipe(rename({ suffix: '.min' }))
-//         .pipe(gulp.dest(config.deploy.folderPath + '/static/css/'));
-// };
-
-// function processLessBlack() {
-//     return gulp.src('static/less/**/*black.less')
-//         .pipe(debug())
-//         .pipe(less())
-//         .pipe(concat('black.css'))
-//         .pipe(gulp.dest(config.deploy.folderPath + '/static/css/'))
-//         //minify
-//         .pipe(cleanCSS({ keepSpecialComments: 0 }))
-//         .pipe(rename({ suffix: '.min' }))
-//         .pipe(gulp.dest(config.deploy.folderPath + '/static/css/'));
-// };
-
-function processHtml() {
+function processHtmlApp() {
     return gulp.src(config.dev.folderPath+'app/**/*.html')
         .pipe(debug())
         .pipe(htmlmin({ collapseWhitespace: true, minifyCSS: true, minifyJS: true, removeComments: true }))
@@ -493,50 +421,31 @@ function processHtmlIndex() {
         .pipe(gulp.dest(config.deploy.folderPath));
 };
 
-function processImages() {
-    return gulp.src(config.dev.folderPath+'static/images/**/*.*')
-        .pipe(debug())
-        //.pipe(gulpImagemin())
-        .pipe(gulp.dest(config.deploy.folderPath + 'static/images/'));
-};
-
-function processFiles() {
-    return gulp.src(config.dev.folderPath+'static/files/**/*.*')
-        .pipe(debug())
-        .pipe(gulp.dest(config.deploy.folderPath + 'static/files/'));
-};
-
-function processTemplate() {
-    return gulp.src(config.dev.folderPath+'template/**/*.html')
-        .pipe(debug())
-        .pipe(gulp.dest(config.deploy.folderPath + 'template/'));
-};
-
 function processJsPluginFile() {
     return gulp.src([
-            config.dev.folderPath+'static/plugin/js/**/*.*'
+            config.dev.folderPath+'app/plugin/js/**/*.*'
         ])
         .pipe(debug())
-        .pipe(gulp.dest(config.deploy.folderPath + 'plugin/js/'));
+        .pipe(gulp.dest(config.deploy.folderPath + 'app/plugin/js/'));
 };
 
 function processJsPluginMin() {
     return gulp.src([
-            config.dev.folderPath+'static/js/plugin/**/*.js',
-            '!'+config.dev.folderPath+'static/js/plugin/**/*.min.js',
-            '!'+config.dev.folderPath+'static/js/plugin/**/*.map',
+            config.dev.folderPath+'app/plugin/js/**/*.js',
+            '!'+config.dev.folderPath+'app/plugin/js/**/*.min.js',
+            '!'+config.dev.folderPath+'app/plugin/js/**/*.map',
 
             //ignore plug list
-            '!'+config.dev.folderPath+'static/js/plugin/amcharts/**/*.*',
-            '!'+config.dev.folderPath+'static/js/plugin/datatables/**/*.*',
+            '!'+config.dev.folderPath+'app/plugin/js/amcharts/**/*.*',
+            '!'+config.dev.folderPath+'app/plugin/js/datatables/**/*.*',
         ])
         .pipe(debug())
-        .pipe(gulp.dest(config.deploy.folderPath + 'plugin/js'))
+        .pipe(gulp.dest(config.deploy.folderPath + 'app/plugin/js'))
         //minify
         .pipe(ngAnnotate())
         .pipe(gulpif(!isDebug, uglify({ mangle: false })))
         .pipe(rename({ suffix: '.min' }))
-        .pipe(gulp.dest(config.deploy.folderPath + 'plugin/js/'));
+        .pipe(gulp.dest(config.deploy.folderPath + 'app/plugin/js/'));
 };
 
 
@@ -546,7 +455,7 @@ function processJsMain() {
         ])
         .pipe(debug())
         .pipe(concat('main.js'))
-        .pipe(gulp.dest(config.deploy.folderPath + 'app/'))
+        //.pipe(gulp.dest(config.deploy.folderPath + 'app/'))
         //minify
         .pipe(uglify({
             mangle: false,
@@ -578,24 +487,17 @@ function processJsApp() {
                 return finalFileList;
             })();
             
-            // fileList = (function() {
-            //     var fileList = [];
-            //     for (var j = 0; j < fileList.length; j++) {
-            //         fileList.push(srcPath + fileList[j]);
-            //     }
-            //     return fileList;
-            // })();
             return gulp.src(fileList)
                 .pipe(debug())
                 .pipe(concat(fileName))
-                .pipe(gulp.dest(config.deploy.folderPath + config.deploy.destPath))
+                //pipe(gulp.dest(config.deploy.folderPath+srcPath))
 
                 .pipe(gulpif(!isDebug, ngAnnotate()))
                 //.pipe(gulpif(!isDebug, sourcemaps.init()))
                 .pipe(gulpif(!isDebug, uglify({ mangle: false })))
                 .pipe(rename({ suffix: '.min' }))
                 //.pipe(gulpif(!isDebug, sourcemaps.write('./')))
-                .pipe(gulp.dest(config.deploy.folderPath + config.deploy.destPath));
+                .pipe(gulp.dest(config.deploy.folderPath+srcPath));
         };
 
         gmux.createAndRunTasks(gulp, dynamicTask[taskName], taskName, '', '', '', function() {});
