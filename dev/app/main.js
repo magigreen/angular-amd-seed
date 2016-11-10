@@ -45,7 +45,7 @@ requirejs.config({
 
         //app module
         'app': 'app/app',
-        'app-utils': 'app/utils/utils',
+        'app-common': 'app/common/common',
         'app-layout': 'app/layout/layout',
 
         'app-page1': 'app/page1/page1',
@@ -77,10 +77,10 @@ requirejs.config({
             'angular-translate',
             'angular-translate-loader-static-files',
             /* js core module */
-            'app-utils',
+            'app-common',
             'app-layout'
         ],
-        'app-utils': ['angular'],
+        'app-common': ['angular'],
         'app-layout': ['angular'],
         'app-page1': ['css!app-page1<css>'],
         'app-page2': ['css!app-page2<css>'],

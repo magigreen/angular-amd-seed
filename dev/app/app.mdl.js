@@ -5,5 +5,6 @@ angular.module('app', [
     'pascalprecht.translate',
 
     /* core module */
-    'app.utils'
+    'app.common',
+    'app.layout'
 ]);

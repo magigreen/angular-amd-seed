@@ -1,5 +1,5 @@
 angular
-    .module('app.utils')
+    .module('app.common')
     .factory("utilsService", function($filter) {
         var utils = {
             i18n: i18n,
