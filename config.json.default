@@ -1,7 +1,7 @@
 {
     "dev": {
         "folderPath": "dev/",
-        "apiUrl": "http://xxx"
+        "apiUrl": "http://xxx/"
     },
     "deploy": {
         "folderPath": "deploy/",
@@ -9,6 +9,7 @@
     },
     "redirectStaticUrl": [],
     "i18n": {
+        "folderPath": "static/i18n/",
         "mainPath": "static/i18n/messages.en.json",
         "extendPath": [
             "static/i18n/messages.zh-tw.json"
@@ -27,11 +28,11 @@
             "*.js"
         ],    
         "processList": [{
-            "taskName": "app",
-            "fileName": "app.js",
+            "taskName": "appIndex",
+            "fileName": "index.js",
             "fileList": [],
-            "srcPath": "app/",
-            "destPath": "app/"
+            "srcPath": "app/index/",
+            "destPath": "app/index/"
         }, {
             "taskName": "appCommon",
             "fileName": "common.js",

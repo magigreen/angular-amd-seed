@@ -1,6 +1,9 @@
 angular.module('app')
     .constant('appOption', {
-        testOpt: 'I am test appOption!'
+        API_ROOT_URL: window.location.origin, //!!!not change it 
+        DEFAULT: {
+            language: 'en' 
+        }
     });
     
 angular.module('app')

@@ -1,9 +1,9 @@
 angular.module('app')
-    .controller('appController', function(appOption, appService, utilsService) {
+    .controller('indexController', function(appOption, indexService,utilsService) {
         var i18n = utilsService.i18n;
-        var appCtrl = this;
-        appCtrl.data = appService.data;
-        appCtrl.fn = {};
+        var indexCtrl = this;
+        indexCtrl.data = indexService.data;
+        indexCtrl.fn = {};
 
         init();
 
