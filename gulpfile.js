@@ -195,15 +195,15 @@ function browserReload() {
 
 function watchReload() {
     //watch js main
-    gulp.watch(config.dev.folderPath+'app/main.js', gulpsync.sync(['processJsMain', 'replaceJsMain', 'browserReload']));
+    gulp.watch(config.dev.folderPath + 'app/main.js', gulpsync.sync(['processJsMain', 'replaceJsMain', 'browserReload']));
 
     //watch js app
     gulp.watch([
-        config.dev.folderPath+'app/**/*.js',
-        '!'+config.dev.folderPath+'app/plugin/**/*',
-        '!'+config.dev.folderPath+'app/main.js'
+        config.dev.folderPath + 'app/**/*.js',
+        '!' + config.dev.folderPath + 'app/plugin/**/*',
+        '!' + config.dev.folderPath + 'app/main.js'
     ], function(event) {
-        var paths = watchPath(event, config.dev.folderPath+'app/', config.deploy.folderPath + 'app/');
+        var paths = watchPath(event, config.dev.folderPath + 'app/', config.deploy.folderPath + 'app/');
         var taskName = (function() {
             //console.log(paths);
             var taskNameAry = (paths.srcDir.split('/').length > 1) ? paths.srcDir.split('/') : paths.srcDir.split('\\');
@@ -212,12 +212,12 @@ function watchReload() {
                 if (i == 0) {
                     continue;
                 }
-                if(i==1){
+                if (i == 1) {
                     taskName += taskNameAry[i];
-                }else{
+                } else {
                     taskName += changeCase.upperCaseFirst(taskNameAry[i]);
                 }
-                
+
             }
             return taskName;
         })();
@@ -246,12 +246,12 @@ function watchReload() {
     });
 
     //watch js plugin
-    gulp.watch([config.dev.folderPath+'app/plugin/js/**/*.js'], gulpsync.sync(['processJsPluginMin', 'browserReload']));
+    gulp.watch([config.dev.folderPath + 'app/plugin/js/**/*.js'], gulpsync.sync(['processJsPluginMin', 'browserReload']));
     gulp.watch([
-        config.dev.folderPath+'app/plugin/js/**/*',
-        '!'+config.dev.folderPath+'app/plugin/js/**/*.js'
+        config.dev.folderPath + 'app/plugin/js/**/*',
+        '!' + config.dev.folderPath + 'app/plugin/js/**/*.js'
     ], function(event) {
-        var paths = watchPath(event, config.dev.folderPath+'app/plugin/js/', config.deploy.folderPath + 'app/plugin/js/');
+        var paths = watchPath(event, config.dev.folderPath + 'app/plugin/js/', config.deploy.folderPath + 'app/plugin/js/');
         return gulp.src(paths.srcPath)
             .pipe(debug())
             .pipe(gulp.dest(paths.distDir))
@@ -261,15 +261,15 @@ function watchReload() {
     });
 
     //watch css
-    gulp.watch(config.dev.folderPath+'app/**/*.css', gulpsync.sync(['processCssApp', 'browserReload']));
-    gulp.watch(config.dev.folderPath+'app/plugin/css/**/*.css', gulpsync.sync(['processCssPluginMin', 'browserReload']));
+    gulp.watch(config.dev.folderPath + 'app/main/**/*.css', gulpsync.sync(['processCssApp', 'browserReload']));
+    gulp.watch(config.dev.folderPath + 'app/plugin/css/**/*.css', gulpsync.sync(['processCssPluginMin', 'browserReload']));
 
     //watch html
-    gulp.watch(config.dev.folderPath+'app/**/*.html', gulpsync.sync(['processHtmlApp', 'browserReload']));
-    gulp.watch(config.dev.folderPath+'index.html', gulpsync.sync(['processHtmlIndex', 'replaceHtmlIndex', 'browserReload']));
+    gulp.watch(config.dev.folderPath + 'app/main/**/*.html', gulpsync.sync(['processHtmlApp', 'browserReload']));
+    gulp.watch(config.dev.folderPath + 'index.html', gulpsync.sync(['processHtmlIndex', 'replaceHtmlIndex', 'browserReload']));
 
     //watch I18n
-    gulp.watch(config.dev.folderPath+config.i18n.folderPath+'**/*.json', gulpsync.sync(['processI18n', 'browserReload']));
+    gulp.watch(config.dev.folderPath + config.i18n.folderPath + '**/*.json', gulpsync.sync(['processI18n', 'browserReload']));
 }
 
 function replaceDevApi() {
@@ -277,12 +277,12 @@ function replaceDevApi() {
         return false;
     }
     return gulp.src([
-            config.deploy.folderPath + 'app/app.js',
-            config.deploy.folderPath + 'app/app.min.js'
+            config.deploy.folderPath + 'app/main/app.js',
+            config.deploy.folderPath + 'app/main/app.min.js'
         ])
         .pipe(debug())
         .pipe(replace(/API_ROOT_URL:[^,]*/, 'API_ROOT_URL: "' + config.dev.apiUrl + '"'))
-        .pipe(gulp.dest(config.deploy.folderPath + 'app/'));
+        .pipe(gulp.dest(config.deploy.folderPath + 'app/main/'));
 }
 
 function replaceDeployApi() {
@@ -290,8 +290,8 @@ function replaceDeployApi() {
         return false;
     }
     return gulp.src([
-            config.deploy.folderPath + 'app/app.js',
-            config.deploy.folderPath + 'app/app.min.js'
+            config.deploy.folderPath + 'app/main/app.js',
+            config.deploy.folderPath + 'app/main/app.min.js'
         ])
         .pipe(debug())
         .pipe(replace(/API_ROOT_URL:[^,]*/, 'API_ROOT_URL: "' + config.deploy.apiUrl + '"'))
@@ -373,16 +373,16 @@ function processI18n() {
     //     fs.unlink(config.dev.folderPath+config.i18n.extendPath[i],function(){
     //         fs.appendFile(config.dev.folderPath+config.i18n.extendPath[i], JSON.stringify(sourceFinal, null, "\t"));   
     //     });
-          
+
     // }
-    return gulp.src(config.dev.folderPath+'static/i18n/*.*')
+    return gulp.src(config.dev.folderPath + 'app/i18n/*.*')
         .pipe(debug())
-        .pipe(gulp.dest(config.deploy.folderPath + 'static/i18n/'));
+        .pipe(gulp.dest(config.deploy.folderPath + 'app/i18n/'));
 }
 
 function processCssPluginFile() {
     return gulp.src([
-            config.dev.folderPath+'app/plugin/css/**/*.*',
+            config.dev.folderPath + 'app/plugin/css/**/*.*',
         ])
         .pipe(debug())
         .pipe(gulp.dest(config.deploy.folderPath + 'app/plugin/css/'));
@@ -390,8 +390,8 @@ function processCssPluginFile() {
 
 function processCssPluginMin() {
     return gulp.src([
-            config.dev.folderPath+'app/plugin/css/**/*.css',
-            '!'+config.dev.folderPath+'app/plugin/css/**/*.min.css'
+            config.dev.folderPath + 'app/plugin/css/**/*.css',
+            '!' + config.dev.folderPath + 'app/plugin/css/**/*.min.css'
         ])
         .pipe(debug())
         .pipe(gulp.dest(config.deploy.folderPath + 'app/plugin/css/'))
@@ -402,23 +402,23 @@ function processCssPluginMin() {
 };
 
 function processCssApp() {
-    return gulp.src(config.dev.folderPath+'app/**/*.css')
+    return gulp.src(config.dev.folderPath + 'app/main/**/*.css')
         .pipe(debug())
         //minify
         .pipe(gulpif(!isDebug, cleanCSS({ keepSpecialComments: 0 })))
         .pipe(rename({ suffix: '.min' }))
-        .pipe(gulp.dest(config.deploy.folderPath + 'app/'));
+        .pipe(gulp.dest(config.deploy.folderPath + 'app/main/'));
 };
 
 function processHtmlApp() {
-    return gulp.src(config.dev.folderPath+'app/**/*.html')
+    return gulp.src(config.dev.folderPath + 'app/main/**/*.html')
         .pipe(debug())
         .pipe(htmlmin({ collapseWhitespace: true, minifyCSS: true, minifyJS: true, removeComments: true }))
-        .pipe(gulp.dest(config.deploy.folderPath + 'app/'));
+        .pipe(gulp.dest(config.deploy.folderPath + 'app/main/'));
 };
 
 function processHtmlIndex() {
-    return gulp.src(config.dev.folderPath+'index.html')
+    return gulp.src(config.dev.folderPath + 'index.html')
         .pipe(debug())
         .pipe(htmlmin({ collapseWhitespace: true, minifyCSS: true, minifyJS: true, removeComments: true }))
         .pipe(gulp.dest(config.deploy.folderPath));
@@ -426,7 +426,7 @@ function processHtmlIndex() {
 
 function processJsPluginFile() {
     return gulp.src([
-            config.dev.folderPath+'app/plugin/js/**/*.*'
+            config.dev.folderPath + 'app/plugin/js/**/*.*'
         ])
         .pipe(debug())
         .pipe(gulp.dest(config.deploy.folderPath + 'app/plugin/js/'));
@@ -434,13 +434,13 @@ function processJsPluginFile() {
 
 function processJsPluginMin() {
     return gulp.src([
-            config.dev.folderPath+'app/plugin/js/**/*.js',
-            '!'+config.dev.folderPath+'app/plugin/js/**/*.min.js',
-            '!'+config.dev.folderPath+'app/plugin/js/**/*.map',
+            config.dev.folderPath + 'app/plugin/js/**/*.js',
+            '!' + config.dev.folderPath + 'app/plugin/js/**/*.min.js',
+            '!' + config.dev.folderPath + 'app/plugin/js/**/*.map',
 
             //ignore plug list
-            '!'+config.dev.folderPath+'app/plugin/js/amcharts/**/*.*',
-            '!'+config.dev.folderPath+'app/plugin/js/datatables/**/*.*',
+            '!' + config.dev.folderPath + 'app/plugin/js/amcharts/**/*.*',
+            '!' + config.dev.folderPath + 'app/plugin/js/datatables/**/*.*',
         ])
         .pipe(debug())
         .pipe(gulp.dest(config.deploy.folderPath + 'app/plugin/js'))
@@ -454,7 +454,7 @@ function processJsPluginMin() {
 
 function processJsMain() {
     return gulp.src([
-            config.dev.folderPath+'app/main.js'
+            config.dev.folderPath + 'app/main.js'
         ])
         .pipe(debug())
         .pipe(concat('main.js'))
@@ -485,22 +485,22 @@ function processJsApp() {
 
                 defaultFileList = (defaultFileList.length) ? defaultFileList : config.processJsApp.defaultFileList;
                 for (var j = 0; j < defaultFileList.length; j++) {
-                    finalFileList.push(config.dev.folderPath+srcPath + defaultFileList[j]);
+                    finalFileList.push(config.dev.folderPath + srcPath + defaultFileList[j]);
                 }
                 return finalFileList;
             })();
-            
+
             return gulp.src(fileList)
                 .pipe(debug())
                 .pipe(concat(fileName))
                 //pipe(gulp.dest(config.deploy.folderPath+srcPath))
 
-                .pipe(gulpif(!isDebug, ngAnnotate()))
+            .pipe(gulpif(!isDebug, ngAnnotate()))
                 //.pipe(gulpif(!isDebug, sourcemaps.init()))
                 .pipe(gulpif(!isDebug, uglify({ mangle: false })))
                 .pipe(rename({ suffix: '.min' }))
                 //.pipe(gulpif(!isDebug, sourcemaps.write('./')))
-                .pipe(gulp.dest(config.deploy.folderPath+srcPath));
+                .pipe(gulp.dest(config.deploy.folderPath + srcPath));
         };
 
         gmux.createAndRunTasks(gulp, dynamicTask[taskName], taskName, '', '', '', function() {});
