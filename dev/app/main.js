@@ -65,7 +65,13 @@ requirejs.config({
      */
     shim: {
         //base plugin
-        'bootstrap': ['css!bootstrap<css>', 'jquery'],
+        'bootstrap': [
+            'jquery',
+
+            /* css module */
+            'css!bootstrap<css>',
+            'css!app<css>'
+        ],
         'angular': ['bootstrap'],
 
         //angular 3-party module
@@ -79,9 +85,6 @@ requirejs.config({
 
         //app module
         'app': [
-            /* css module */
-            'css!app<css>',
-
             /* js 3-party module */
             'ocLazyLoad-require',
             'angular-ui-router',

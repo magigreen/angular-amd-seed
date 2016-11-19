@@ -199,11 +199,11 @@ function watchReload() {
 
     //watch js app
     gulp.watch([
-        config.dev.folderPath + 'app/**/*.js',
+        config.dev.folderPath + 'app/main/**/*.js',
         '!' + config.dev.folderPath + 'app/plugin/**/*',
         '!' + config.dev.folderPath + 'app/main.js'
     ], function(event) {
-        var paths = watchPath(event, config.dev.folderPath + 'app/', config.deploy.folderPath + 'app/');
+        var paths = watchPath(event, config.dev.folderPath + 'app/main/', config.deploy.folderPath + 'app/main/');
         var taskName = (function() {
             //console.log(paths);
             var taskNameAry = (paths.srcDir.split('/').length > 1) ? paths.srcDir.split('/') : paths.srcDir.split('\\');
