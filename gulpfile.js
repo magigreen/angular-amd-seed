@@ -1,7 +1,6 @@
 /*******************************************************************************
  *  Var  Definition
  *
- *  !!!must to add file 'config.json' from  'config.json.default' and custom update
  *******************************************************************************/
 var gulp = require('gulp');
 var argv = require('yargs').argv;
@@ -37,7 +36,8 @@ var isDebug = argv.debug; // true is not to minify js file, ex: gulp [taskname] 
 //var isRedirect = argv.redirect; // true is redirect js file domain, map: redirectStaticUrl, ex: gulp [taskname] --redirect
 var isBuildConfig = argv.buildConfig; // true is auto build file copy 'config.json.default' to 'config.json' , ex: gulp [taskname] --buildConfig
 
-var config = {}; // from 'config.json'
+//var config = {}; // from 'config.json'
+var config = JSON.parse(fs.readFileSync('config.json'));
 var dynamicTask = {};
 
 /*******************************************************************************
@@ -46,7 +46,7 @@ var dynamicTask = {};
  *
  *******************************************************************************/
 gulp.task('default', gulpsync.sync([
-    'buildConfig',
+    //'buildConfig',
     'clean',
     'processBase',
 
@@ -64,7 +64,7 @@ gulp.task('default', gulpsync.sync([
  *
  *******************************************************************************/
 gulp.task('deploy', gulpsync.sync([
-    'buildConfig',
+    //'buildConfig',
     'clean',
     'processBase',
 
@@ -78,7 +78,7 @@ gulp.task('deploy', gulpsync.sync([
  *  Other Task Definition
  *
  *******************************************************************************/
-gulp.task('buildConfig', buildConfig);
+//gulp.task('buildConfig', buildConfig);
 gulp.task('setConfig', setConfig);
 gulp.task('clean', clean);
 gulp.task('runServer', runServer);
@@ -145,20 +145,20 @@ gulp.task('processBase', gulpsync.sync([
  *  Function Definition
  *
  *******************************************************************************/
-function buildConfig() {
-    return gulp.src([
-            'config.json.default'
-        ])
-        .pipe(debug())
-        .pipe(gulpif(isBuildConfig, rename({
-            basename: "config",
-            extname: ".json"
-        })))
-        .pipe(gulp.dest('./'))
-        .pipe(gcallback(function() {
-            setConfig();
-        }));
-}
+// function buildConfig() {
+//     return gulp.src([
+//             'config.json.default'
+//         ])
+//         .pipe(debug())
+//         .pipe(gulpif(isBuildConfig, rename({
+//             basename: "config",
+//             extname: ".json"
+//         })))
+//         .pipe(gulp.dest('./'))
+//         .pipe(gcallback(function() {
+//             setConfig();
+//         }));
+// }
 
 function setConfig() {
     config = JSON.parse(fs.readFileSync('config.json'));
@@ -195,15 +195,15 @@ function browserReload() {
 
 function watchReload() {
     //watch js main
-    gulp.watch(config.dev.folderPath+'app/main.js', gulpsync.sync(['processJsMain', 'replaceJsMain', 'browserReload']));
+    gulp.watch(config.dev.folderPath + 'app/main.js', gulpsync.sync(['processJsMain', 'replaceJsMain', 'browserReload']));
 
     //watch js app
     gulp.watch([
-        config.dev.folderPath+'app/**/*.js',
-        '!'+config.dev.folderPath+'app/plugin/**/*',
-        '!'+config.dev.folderPath+'app/main.js'
+        config.dev.folderPath + 'app/main/**/*.js',
+        '!' + config.dev.folderPath + 'app/plugin/**/*',
+        '!' + config.dev.folderPath + 'app/main.js'
     ], function(event) {
-        var paths = watchPath(event, config.dev.folderPath+'app/', config.deploy.folderPath + 'app/');
+        var paths = watchPath(event, config.dev.folderPath + 'app/main/', config.deploy.folderPath + 'app/main/');
         var taskName = (function() {
             //console.log(paths);
             var taskNameAry = (paths.srcDir.split('/').length > 1) ? paths.srcDir.split('/') : paths.srcDir.split('\\');
@@ -212,12 +212,12 @@ function watchReload() {
                 if (i == 0) {
                     continue;
                 }
-                if(i==1){
+                if (i == 1) {
                     taskName += taskNameAry[i];
-                }else{
+                } else {
                     taskName += changeCase.upperCaseFirst(taskNameAry[i]);
                 }
-                
+
             }
             return taskName;
         })();
@@ -232,26 +232,28 @@ function watchReload() {
             }
             return taskInfo;
         })();
+        // console.log('========================');
+        // console.log(taskName);
+        // console.log(taskInfo);
         return gulp.src(paths.srcPath)
             .pipe(debug())
             .pipe(gcallback(function() {
-                dynamicTask[taskName](taskInfo);
-            }))
-            .pipe(gcallback(function() {
-                replaceDevApi();
-            }))
-            .pipe(gcallback(function() {
-                browserReload();
+                Promise.all([dynamicTask[taskName](taskInfo)])
+                    .then(function() {
+                        replaceDevApi();
+                    }).then(function() {
+                        browserReload();
+                    });
             }));
     });
 
     //watch js plugin
-    gulp.watch([config.dev.folderPath+'app/plugin/js/**/*.js'], gulpsync.sync(['processJsPluginMin', 'browserReload']));
+    gulp.watch([config.dev.folderPath + 'app/plugin/js/**/*.js'], gulpsync.sync(['processJsPluginMin', 'browserReload']));
     gulp.watch([
-        config.dev.folderPath+'app/plugin/js/**/*',
-        '!'+config.dev.folderPath+'app/plugin/js/**/*.js'
+        config.dev.folderPath + 'app/plugin/js/**/*',
+        '!' + config.dev.folderPath + 'app/plugin/js/**/*.js'
     ], function(event) {
-        var paths = watchPath(event, config.dev.folderPath+'app/plugin/js/', config.deploy.folderPath + 'app/plugin/js/');
+        var paths = watchPath(event, config.dev.folderPath + 'app/plugin/js/', config.deploy.folderPath + 'app/plugin/js/');
         return gulp.src(paths.srcPath)
             .pipe(debug())
             .pipe(gulp.dest(paths.distDir))
@@ -261,41 +263,37 @@ function watchReload() {
     });
 
     //watch css
-    gulp.watch(config.dev.folderPath+'app/**/*.css', gulpsync.sync(['processCssApp', 'browserReload']));
-    gulp.watch(config.dev.folderPath+'app/plugin/css/**/*.css', gulpsync.sync(['processCssPluginMin', 'browserReload']));
+    gulp.watch(config.dev.folderPath + 'app/**/*.css', gulpsync.sync(['processCssApp', 'browserReload']));
+    gulp.watch(config.dev.folderPath + 'app/plugin/css/**/*.css', gulpsync.sync(['processCssPluginMin', 'browserReload']));
 
     //watch html
-    gulp.watch(config.dev.folderPath+'app/**/*.html', gulpsync.sync(['processHtmlApp', 'browserReload']));
-    gulp.watch(config.dev.folderPath+'index.html', gulpsync.sync(['processHtmlIndex', 'replaceHtmlIndex', 'browserReload']));
+    gulp.watch(config.dev.folderPath + 'app/**/*.html', gulpsync.sync(['processHtmlApp', 'browserReload']));
+    gulp.watch(config.dev.folderPath + 'index.html', gulpsync.sync(['processHtmlIndex', 'replaceHtmlIndex', 'browserReload']));
 
     //watch I18n
-    gulp.watch(config.dev.folderPath+config.i18n.folderPath+'**/*.json', gulpsync.sync(['processI18n', 'browserReload']));
+    gulp.watch(config.dev.folderPath + config.i18n.folderPath + '**/*.json', gulpsync.sync(['processI18n', 'browserReload']));
 }
 
 function replaceDevApi() {
-    if (!config.dev.apiUrl) {
-        return false;
-    }
     return gulp.src([
-            config.deploy.folderPath + 'app/app.js',
-            config.deploy.folderPath + 'app/app.min.js'
+            config.deploy.folderPath + 'app/main/app.js',
+            config.deploy.folderPath + 'app/main/app.min.js'
         ])
         .pipe(debug())
-        .pipe(replace(/API_ROOT_URL:[^,]*/, 'API_ROOT_URL: "' + config.dev.apiUrl + '"'))
-        .pipe(gulp.dest(config.deploy.folderPath + 'app/'));
+        .pipe(gulpif(!!config.dev.apiUrl, replace(/API_ROOT_URL:[^,]*/, 'API_ROOT_URL: "' + config.dev.apiUrl + '"')))
+        .pipe(gulpif(!!config.dev.h2hApiUrl, replace(/H2H_API_ROOT_URL:[^,]*/, 'H2H_API_ROOT_URL: "' + config.dev.h2hApiUrl + '"')))
+        .pipe(gulp.dest(config.deploy.folderPath + 'app/main/'));
 }
 
 function replaceDeployApi() {
-    if (!config.deploy.apiUrl) {
-        return false;
-    }
     return gulp.src([
-            config.deploy.folderPath + 'app/app.js',
-            config.deploy.folderPath + 'app/app.min.js'
+            config.deploy.folderPath + 'app/main/app.js',
+            config.deploy.folderPath + 'app/main/app.min.js'
         ])
         .pipe(debug())
-        .pipe(replace(/API_ROOT_URL:[^,]*/, 'API_ROOT_URL: "' + config.deploy.apiUrl + '"'))
-        .pipe(gulp.dest(config.deploy.folderPath + 'app/'));
+        .pipe(gulpif(!!config.deploy.apiUrl, replace(/API_ROOT_URL:[^,]*/, 'API_ROOT_URL: "' + config.deploy.apiUrl + '"')))
+        .pipe(gulpif(!!config.deploy.h2hApiUrl, replace(/H2H_API_ROOT_URL:[^,]*/, 'H2H_API_ROOT_URL: "' + config.deploy.h2hApiUrl + '"')))
+        .pipe(gulp.dest(config.deploy.folderPath + 'app/main/'));
 }
 
 function replaceHtmlIndex() {
@@ -373,16 +371,16 @@ function processI18n() {
     //     fs.unlink(config.dev.folderPath+config.i18n.extendPath[i],function(){
     //         fs.appendFile(config.dev.folderPath+config.i18n.extendPath[i], JSON.stringify(sourceFinal, null, "\t"));   
     //     });
-          
+
     // }
-    return gulp.src(config.dev.folderPath+'static/i18n/*.*')
+    return gulp.src(config.dev.folderPath + 'app/i18n/*.*')
         .pipe(debug())
-        .pipe(gulp.dest(config.deploy.folderPath + 'static/i18n/'));
+        .pipe(gulp.dest(config.deploy.folderPath + 'app/i18n/'));
 }
 
 function processCssPluginFile() {
     return gulp.src([
-            config.dev.folderPath+'app/plugin/css/**/*.*',
+            config.dev.folderPath + 'app/plugin/css/**/*.*',
         ])
         .pipe(debug())
         .pipe(gulp.dest(config.deploy.folderPath + 'app/plugin/css/'));
@@ -390,8 +388,8 @@ function processCssPluginFile() {
 
 function processCssPluginMin() {
     return gulp.src([
-            config.dev.folderPath+'app/plugin/css/**/*.css',
-            '!'+config.dev.folderPath+'app/plugin/css/**/*.min.css'
+            config.dev.folderPath + 'app/plugin/css/**/*.css',
+            '!' + config.dev.folderPath + 'app/plugin/css/**/*.min.css'
         ])
         .pipe(debug())
         .pipe(gulp.dest(config.deploy.folderPath + 'app/plugin/css/'))
@@ -402,7 +400,7 @@ function processCssPluginMin() {
 };
 
 function processCssApp() {
-    return gulp.src(config.dev.folderPath+'app/**/*.css')
+    return gulp.src(config.dev.folderPath + 'app/**/*.css')
         .pipe(debug())
         //minify
         .pipe(gulpif(!isDebug, cleanCSS({ keepSpecialComments: 0 })))
@@ -411,14 +409,14 @@ function processCssApp() {
 };
 
 function processHtmlApp() {
-    return gulp.src(config.dev.folderPath+'app/**/*.html')
+    return gulp.src(config.dev.folderPath + 'app/**/*.html')
         .pipe(debug())
         .pipe(htmlmin({ collapseWhitespace: true, minifyCSS: true, minifyJS: true, removeComments: true }))
         .pipe(gulp.dest(config.deploy.folderPath + 'app/'));
 };
 
 function processHtmlIndex() {
-    return gulp.src(config.dev.folderPath+'index.html')
+    return gulp.src(config.dev.folderPath + 'index.html')
         .pipe(debug())
         .pipe(htmlmin({ collapseWhitespace: true, minifyCSS: true, minifyJS: true, removeComments: true }))
         .pipe(gulp.dest(config.deploy.folderPath));
@@ -426,7 +424,7 @@ function processHtmlIndex() {
 
 function processJsPluginFile() {
     return gulp.src([
-            config.dev.folderPath+'app/plugin/js/**/*.*'
+            config.dev.folderPath + 'app/plugin/js/**/*.*'
         ])
         .pipe(debug())
         .pipe(gulp.dest(config.deploy.folderPath + 'app/plugin/js/'));
@@ -434,13 +432,14 @@ function processJsPluginFile() {
 
 function processJsPluginMin() {
     return gulp.src([
-            config.dev.folderPath+'app/plugin/js/**/*.js',
-            '!'+config.dev.folderPath+'app/plugin/js/**/*.min.js',
-            '!'+config.dev.folderPath+'app/plugin/js/**/*.map',
+            config.dev.folderPath + 'app/plugin/js/**/*.js',
+            '!' + config.dev.folderPath + 'app/plugin/js/**/*.min.js',
+            '!' + config.dev.folderPath + 'app/plugin/js/**/*.map',
 
             //ignore plug list
-            '!'+config.dev.folderPath+'app/plugin/js/amcharts/**/*.*',
-            '!'+config.dev.folderPath+'app/plugin/js/datatables/**/*.*',
+            '!' + config.dev.folderPath + 'app/plugin/js/amcharts/**/*.*',
+            '!' + config.dev.folderPath + 'app/plugin/js/datatables/**/*.*',
+            '!' + config.dev.folderPath + 'app/plugin/js/legal/plugin/ckeditor/**/*.*',
         ])
         .pipe(debug())
         .pipe(gulp.dest(config.deploy.folderPath + 'app/plugin/js'))
@@ -454,7 +453,7 @@ function processJsPluginMin() {
 
 function processJsMain() {
     return gulp.src([
-            config.dev.folderPath+'app/main.js'
+            config.dev.folderPath + 'app/main.js'
         ])
         .pipe(debug())
         .pipe(concat('main.js'))
@@ -485,22 +484,20 @@ function processJsApp() {
 
                 defaultFileList = (defaultFileList.length) ? defaultFileList : config.processJsApp.defaultFileList;
                 for (var j = 0; j < defaultFileList.length; j++) {
-                    finalFileList.push(config.dev.folderPath+srcPath + defaultFileList[j]);
+                    finalFileList.push(config.dev.folderPath + srcPath + defaultFileList[j]);
                 }
                 return finalFileList;
             })();
-            
             return gulp.src(fileList)
                 .pipe(debug())
                 .pipe(concat(fileName))
                 //pipe(gulp.dest(config.deploy.folderPath+srcPath))
-
                 .pipe(gulpif(!isDebug, ngAnnotate()))
                 //.pipe(gulpif(!isDebug, sourcemaps.init()))
                 .pipe(gulpif(!isDebug, uglify({ mangle: false })))
                 .pipe(rename({ suffix: '.min' }))
                 //.pipe(gulpif(!isDebug, sourcemaps.write('./')))
-                .pipe(gulp.dest(config.deploy.folderPath+srcPath));
+                .pipe(gulp.dest(config.deploy.folderPath + srcPath));
         };
 
         gmux.createAndRunTasks(gulp, dynamicTask[taskName], taskName, '', '', '', function() {});

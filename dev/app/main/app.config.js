@@ -1,12 +1,4 @@
 angular.module('app')
-    .constant('appOption', {
-        API_ROOT_URL: window.location.origin, //!!!not change it 
-        DEFAULT: {
-            language: 'en' 
-        }
-    });
-    
-angular.module('app')
     .config(function($translateProvider) {
         //default language
         $translateProvider.preferredLanguage('en');
@@ -16,7 +8,7 @@ angular.module('app')
 
         //load language entries from files
         $translateProvider.useStaticFilesLoader({
-            prefix: 'static/i18n/messages.', //relative path Eg: /languages/
+            prefix: 'app/i18n/messages.', //relative path Eg: /languages/
             suffix: '.json' //file extension
         });
     })

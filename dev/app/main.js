@@ -24,11 +24,11 @@ requirejs.config({
         'font-awesome<css>': 'plugin/css/fontawesome/css/font-awesome.min',
 
         //app module
-        'app<css>': 'index/index.min',
-        'app-page1<css>': 'page1/page1.min',
-        'app-page2<css>': 'page2/page2.min',
-        'app-page2-demo1<css>': 'page2/demo1/demo1.min',
-        'app-page2-demo2<css>': 'page2/demo2/demo2.min',
+        'app<css>': 'main/app.min',
+        'app-page1<css>': 'main/page1/page1.min',
+        'app-page2<css>': 'main/page2/page2.min',
+        'app-page2-demo1<css>': 'main/page2/demo1/demo1.min',
+        'app-page2-demo2<css>': 'main/page2/demo2/demo2.min',
 
         /**
          *  [js path]
@@ -44,14 +44,14 @@ requirejs.config({
         'angular-translate-loader-static-files': 'plugin/js/angular-translate-loader-static-files/angular-translate-loader-static-files.min',
 
         //app module
-        'app': 'index/index.min',
-        'app-common': 'common/common.min',
-        'app-layout': 'layout/layout.min',
+        'app': 'main/app.min',
+        'app-common': 'main/common/app-common.min',
+        'app-layout': 'main/layout/app-layout.min',
 
-        'app-page1': 'page1/page1.min',
-        'app-page2': 'page2/page2.min',
-        'app-page2-demo1': 'page2/demo1/demo1.min',
-        'app-page2-demo2': 'page2/demo2/demo2.min',
+        'app-page1': 'main/page1/app-page1.min',
+        'app-page2': 'main/page2/app-page2.min',
+        'app-page2-demo1': 'main/page2/demo1/app-page2-demo1.min',
+        'app-page2-demo2': 'main/page2/demo2/app-page2-demo2.min',
 
     },
 

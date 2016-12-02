@@ -1,7 +1,7 @@
 {
     "dev": {
         "folderPath": "dev/",
-        "apiUrl": "http://xxx/"
+        "apiUrl": ""
     },
     "deploy": {
         "folderPath": "deploy/",
@@ -9,10 +9,10 @@
     },
     "redirectStaticUrl": [],
     "i18n": {
-        "folderPath": "static/i18n/",
-        "mainPath": "static/i18n/messages.en.json",
+        "folderPath": "app/i18n/",
+        "mainPath": "app/i18n/messages.en.json",
         "extendPath": [
-            "static/i18n/messages.zh-tw.json"
+            "app/i18n/messages.zh-tw.json"
         ]
     },
     "processJsApp": {
@@ -26,50 +26,50 @@
             "*.svc.js",
             "*.ctrl.js",
             "*.js"
-        ],    
+        ],
         "processList": [{
-            "taskName": "appIndex",
-            "fileName": "index.js",
+            "taskName": "appMain",
+            "fileName": "app.js",
             "fileList": [],
-            "srcPath": "app/index/",
-            "destPath": "app/index/"
+            "srcPath": "app/main/",
+            "destPath": "app/main/"
         }, {
             "taskName": "appCommon",
-            "fileName": "common.js",
+            "fileName": "app-common.js",
             "fileList": [],
-            "srcPath": "app/common/",
-            "destPath": "app/common/"
+            "srcPath": "app/main/common/",
+            "destPath": "app/main/common/"
         }, {
             "taskName": "appLayout",
-            "fileName": "layout.js",
+            "fileName": "app-layout.js",
             "fileList": [],
-            "srcPath": "app/layout/",
-            "destPath": "app/layout/"
+            "srcPath": "app/main/layout/",
+            "destPath": "app/main/layout/"
 
         }, {
             "taskName": "appPage1",
-            "fileName": "page1.js",
+            "fileName": "app-page1.js",
             "fileList": [],
-            "srcPath": "app/page1/",
-            "destPath": "app/page1/"
+            "srcPath": "app/main/page1/",
+            "destPath": "app/main/page1/"
         }, {
             "taskName": "appPage2",
-            "fileName": "page2.js",
+            "fileName": "app-page2.js",
             "fileList": [],
-            "srcPath": "app/page2/",
-            "destPath": "app/page2/"
+            "srcPath": "app/main/page2/",
+            "destPath": "app/main/page2/"
         }, {
             "taskName": "appPage2Demo1",
-            "fileName": "demo1.js",
+            "fileName": "app-page2-demo1.js",
             "fileList": [],
-            "srcPath": "app/page2/demo1/",
-            "destPath": "app/page2/demo1/"
+            "srcPath": "app/main/page2/demo1/",
+            "destPath": "app/main/page2/demo1/"
         }, {
             "taskName": "appPage2Demo2",
-            "fileName": "demo2.js",
+            "fileName": "app-page2-demo2.js",
             "fileList": [],
-            "srcPath": "app/page2/demo2/",
-            "destPath": "app/page2/demo2/"
+            "srcPath": "app/main/page2/demo2/",
+            "destPath": "app/main/page2/demo2/"
         }]
     }
 }
