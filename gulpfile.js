@@ -405,14 +405,14 @@ function processCssApp() {
         //minify
         .pipe(gulpif(!isDebug, cleanCSS({ keepSpecialComments: 0 })))
         .pipe(rename({ suffix: '.min' }))
-        .pipe(gulp.dest(config.deploy.folderPath + 'app/'));
+        .pipe(gulp.dest(config.deploy.folderPath + 'app/main/'));
 };
 
 function processHtmlApp() {
     return gulp.src(config.dev.folderPath + 'app/**/*.html')
         .pipe(debug())
         .pipe(htmlmin({ collapseWhitespace: true, minifyCSS: true, minifyJS: true, removeComments: true }))
-        .pipe(gulp.dest(config.deploy.folderPath + 'app/'));
+        .pipe(gulp.dest(config.deploy.folderPath + 'app/main/'));
 };
 
 function processHtmlIndex() {
